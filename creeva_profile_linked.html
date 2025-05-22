@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>내 프로필</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #faf6f0; color: #3c2f2f; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="max-w-xl mx-auto p-4 space-y-6">
+    <!-- 상단 유저 정보 -->
+    <div class="flex items-center space-x-4">
+      <img src="https://placekitten.com/100/100" alt="프로필" class="w-16 h-16 rounded-full border" />
+      <div>
+        <h2 class="text-lg font-bold">벨리</h2>
+        <div class="text-sm text-gray-600">가입일: 2025-05-22</div>
+      </div>
+    </div>
+
+    <!-- 팔로워/팔로잉 -->
+    <div class="flex justify-start gap-6 text-sm mt-2">
+      <a href="creeva_follower_list.html">팔로워 <span class="font-semibold">12</span></a>
+      <a href="creeva_following_list.html">팔로잉 <span class="font-semibold">20</span></a>
+    </div>
+
+    <!-- 내 작품 리스트 -->
+    <h3 class="text-base font-semibold mt-6">내 작품</h3>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="rounded-lg overflow-hidden shadow bg-white">
+        <img src="https://placekitten.com/401/300" class="w-full h-32 object-cover" />
+        <div class="p-2">
+          <h4 class="text-sm font-semibold truncate">따뜻한 봄</h4>
+          <p class="text-xs text-gray-600">♥ 14 · 댓글 3</p>
+        </div>
+      </div>
+      <div class="rounded-lg overflow-hidden shadow bg-white">
+        <img src="https://placekitten.com/402/300" class="w-full h-32 object-cover" />
+        <div class="p-2">
+          <h4 class="text-sm font-semibold truncate">고양이의 오후</h4>
+          <p class="text-xs text-gray-600">♥ 27 · 댓글 5</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

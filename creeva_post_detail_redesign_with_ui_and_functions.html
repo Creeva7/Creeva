@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>작품 상세</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    body { background-color: #faf6f0; color: #3c2f2f; }
+  </style>
+</head>
+<body>
+<div class="max-w-xl mx-auto p-4 space-y-6">
+<!-- 작품 정보 -->
+<img class="w-full rounded-md" src="https://placekitten.com/400/300"/>
+<div>
+<h2 class="text-xl font-bold mt-2">고양이 일러스트</h2>
+<div class="flex justify-between items-center text-sm mt-1">
+<p class="text-gray-600">by 숨길</p>
+<div class="flex gap-2">
+<button class="text-xs px-3 py-1 border rounded-full">팔로우</button>
+<button class="text-xs text-red-400 underline">신고</button>
+</div>
+</div>
+<p class="mt-2 text-sm">고양이를 좋아하는 마음으로 그려본 그림입니다. 포근한 색감과 부드러운 선을 살렸습니다.</p>
+<div class="mt-2 text-pink-500 font-semibold text-sm">♥ 좋아요 35</div>
+</div>
+<!-- 댓글 -->
+<hr class="my-4 border-t border-gray-300"/>
+<div>
+<h3 class="font-bold mb-2 text-base">댓글</h3>
+<form class="relative">
+<input class="w-full pr-20 pl-4 py-2 rounded-full border text-sm" id="commentInput" placeholder="댓글을 입력하세요" type="text"/>
+<button class="absolute right-1 top-1 bottom-1 px-4 text-sm rounded-full bg-pink-300 text-white hover:bg-pink-400" id="submitComment" type="button">
+        보내기
+      </button>
+</form>
+<ul class="space-y-2 text-sm">
+<li class="border-b pb-1"><strong>크리</strong>: 분위기 너무 좋아요!</li>
+<li class="border-b pb-1"><strong>빛나</strong>: 그림에서 따뜻함이 느껴져요.</li>
+</ul>
+</div>
+<!-- 추천 작품 -->
+<hr class="my-6 border-t border-gray-300"/>
+<div>
+<h3 class="font-bold text-base mb-2">추천 작품</h3>
+<div class="grid grid-cols-2 gap-4">
+<div class="rounded-lg overflow-hidden shadow bg-white">
+<img class="w-full h-32 object-cover" src="https://placekitten.com/401/300"/>
+<div class="p-2">
+<h4 class="text-sm font-semibold truncate">별밤 이야기</h4>
+<p class="text-xs text-gray-600">by 하루</p>
+</div>
+</div>
+<div class="rounded-lg overflow-hidden shadow bg-white">
+<img class="w-full h-32 object-cover" src="https://placekitten.com/402/300"/>
+<div class="p-2">
+<h4 class="text-sm font-semibold truncate">푸른 바람</h4>
+<p class="text-xs text-gray-600">by 미르</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getFirestore, doc, getDoc, updateDoc, increment,
+      collection, addDoc, query, where, orderBy, getDocs, setDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import {
+      getAuth, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyChumSsN546_YB9bagg2U5TPHxYfIKYbhU",
+      authDomain: "creeva-7e0dc.firebaseapp.com",
+      projectId: "creeva-7e0dc",
+      storageBucket: "creeva-7e0dc.appspot.com",
+      messagingSenderId: "589598624970",
+      appId: "1:589598624970:web:7ed4a464743e3d711f7833"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth();
+
+    const params = new URLSearchParams(location.search);
+    const postId = params.get("id");
+
+    let currentUser = null;
+    let liked = false;
+
+    onAuthStateChanged(auth, async user => {
+      currentUser = user;
+      if (postId) {
+        await loadPost();
+        await loadComments();
+        if (currentUser) {
+          const likeRef = doc(db, "posts", postId, "likes", currentUser.uid);
+          const likeSnap = await getDoc(likeRef);
+          liked = likeSnap.exists();
+        }
+      }
+    });
+
+    async function loadPost() {
+      const postRef = doc(db, "posts", postId);
+      const snap = await getDoc(postRef);
+      if (!snap.exists()) return;
+      const post = snap.data();
+      document.getElementById("detailImage").src = post.imageUrl;
+      document.getElementById("detailTitle").textContent = post.title;
+      document.getElementById("detailDesc").textContent = post.desc;
+      document.getElementById("likeCount").textContent = post.likes ?? 0;
+      const tagBox = document.getElementById("detailTags");
+      tagBox.innerHTML = "";
+      post.tags?.forEach(tag => {
+        const el = document.createElement("a");
+        el.href = `creeva_search_page.html?tag=${tag.replace('#','')}`;
+        el.textContent = tag;
+        el.className = "hover:underline";
+        tagBox.appendChild(el);
+      });
+    }
+
+    async function loadComments() {
+      const q = query(collection(db, "comments"), where("postId", "==", postId), orderBy("createdAt", "asc"));
+      const snap = await getDocs(q);
+      const list = document.getElementById("commentList");
+      list.innerHTML = "";
+      for (const docSnap of snap.docs) {
+        const c = docSnap.data();
+        const div = document.createElement("div");
+        div.className = "text-sm bg-white p-2 rounded shadow";
+        const userSnap = await getDoc(doc(db, "users", c.uid));
+        const nickname = userSnap.exists() ? userSnap.data().name : "익명";
+        const replyTo = c.replyTo ? `<div class="text-xs text-gray-400">↪ 대댓글</div>` : "";
+        const content = `
+          <div class="flex justify-between items-center">
+            <span class="font-semibold">${nickname}</span>
+            ${currentUser && currentUser.uid === c.uid ? `<button data-id="${docSnap.id}" class="editBtn text-xs text-blue-500">수정</button>` : ""}
+          </div>
+          ${replyTo}
+          <div class="comment-text">${c.text}</div>
+        `;
+        div.innerHTML = content;
+        list.appendChild(div);
+      }
+    }
+
+    document.getElementById("likeBtn").addEventListener("click", async () => {
+      if (!currentUser || liked) return alert("이미 좋아요를 눌렀어요.");
+      const postRef = doc(db, "posts", postId);
+      const likeRef = doc(db, "posts", postId, "likes", currentUser.uid);
+      await updateDoc(postRef, { likes: increment(1) });
+      await setDoc(likeRef, { uid: currentUser.uid });
+      liked = true;
+      const snap = await getDoc(postRef);
+      document.getElementById("likeCount").textContent = snap.data().likes;
+    });
+
+    document.getElementById("submitComment").addEventListener("click", async () => {
+      const text = document.getElementById("commentInput").value.trim();
+      if (!currentUser) return alert("로그인이 필요합니다");
+      if (!text) return alert("댓글을 입력하세요");
+
+      await addDoc(collection(db, "comments"), {
+        postId,
+        uid: currentUser.uid,
+        text,
+        createdAt: new Date()
+      });
+
+      document.getElementById("commentInput").value = "";
+      loadComments();
+    });
+  </script></body>
+</html>

@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>작품 업로드</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #faf6f0; color: #3c2f2f; }
+    .accent-color { background-color: #f9afa1; }
+    .accent-color:hover { background-color: #f48c83; }
+  </style>
+</head>
+<body>
+  <div class="max-w-xl mx-auto p-4 space-y-4">
+    <h2 class="text-xl font-bold mb-2">작품 업로드</h2>
+    <form class="space-y-4">
+      <div class="border-2 border-dashed border-gray-300 rounded-md h-48 flex items-center justify-center text-4xl text-gray-400">+</div>
+      <div class="text-right">
+        <button class="text-center px-4 py-2 border rounded-md text-sm text-gray-600">삭제</button>
+      </div>
+
+      <input type="text" placeholder="제목 입력 (32자)" class="w-full p-2 border rounded" maxlength="32" />
+      <textarea placeholder="설명 입력 (300자)" class="w-full p-2 border rounded h-24" maxlength="300"></textarea>
+
+      <div>
+        <label class="text-sm font-semibold block mb-1">태그 <span class="text-red-400">필수</span></label>
+        <div class="flex gap-2">
+          <input type="text" id="tagInput" placeholder="#태그 추가" class="flex-1 p-2 border rounded" />
+          <button type="button" onclick="addTag()" class="px-3 py-2 bg-gray-200 rounded text-sm">추가</button>
+        </div>
+        <div id="tagList" class="flex flex-wrap gap-2 mt-2 text-xs text-white"></div>
+        <div class="text-right text-xs text-gray-500">0/10</div>
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold block mb-1">연령제한 <span class="text-red-400">필수</span></label>
+        <div class="flex gap-4 text-sm">
+          <label><input type="radio" name="age" /> 전체연령</label>
+          <label><input type="radio" name="age" /> R-18</label>
+          <label><input type="radio" name="age" /> R-18G</label>
+        </div>
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold block mb-1">공개 제한</label>
+        <div class="flex gap-4 text-sm">
+          <label><input type="radio" name="visibility" /> 전체 공개</label>
+          <label><input type="radio" name="visibility" /> 비공개</label>
+          <label><input type="radio" name="visibility" /> 로그인 유저만</label>
+        </div>
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold block mb-1">작품 댓글</label>
+        <div class="flex gap-4 text-sm">
+          <label><input type="radio" name="comment" checked /> ON</label>
+          <label><input type="radio" name="comment" /> OFF</label>
+        </div>
+      </div>
+
+      <button class="w-full py-3 accent-color text-white font-bold rounded-full shadow-md tracking-wide">투고하기</button>
+    </form>
+  </div>
+
+  <script>
+    const tags = [];
+    function addTag() {
+      const input = document.getElementById('tagInput');
+      let tag = input.value.trim();
+      if (!tag) return;
+      if (!tag.startsWith('#')) tag = '#' + tag;
+      if (tags.includes(tag) || tags.length >= 10) return;
+      tags.push(tag);
+      const tagList = document.getElementById('tagList');
+      const span = document.createElement('span');
+      span.textContent = tag;
+      span.className = 'bg-pink-300 px-2 py-1 rounded-full';
+      tagList.appendChild(span);
+      input.value = '';
+    }
+  </script>
+</body>
+</html>

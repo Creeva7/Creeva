@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>설정</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#faf6f0] text-[#3c2f2f]" id="body">
+  <div class="max-w-xl mx-auto p-4 space-y-6">
+    <!-- 상단 -->
+    <div class="flex justify-between items-center">
+      <a href="creeva_home_sorted_menu.html" class="text-lg text-gray-500">← 홈</a>
+      <h1 class="text-xl font-bold">설정</h1>
+      <div class="w-6"></div>
+    </div>
+
+    <!-- 사용자 정보 -->
+    <div class="bg-white rounded shadow p-4 space-y-2">
+      <p class="text-sm font-semibold">이메일</p>
+      <p id="userEmail" class="text-sm text-gray-600">-</p>
+      <p class="text-sm font-semibold mt-3">UID</p>
+      <p id="userUid" class="text-sm text-gray-600">-</p>
+    </div>
+
+    <!-- 닉네임 변경 -->
+    <div class="bg-white rounded shadow p-4 space-y-3">
+      <h2 class="text-sm font-semibold">닉네임 변경</h2>
+      <p class="text-xs text-gray-500">닉네임은 <strong>일주일에 한 번만</strong> 변경할 수 있어요.</p>
+      <input id="nickname" type="text" placeholder="새 닉네임" class="w-full p-2 border rounded" />
+      <button id="saveNickname" class="w-full py-2 bg-gray-200 rounded">저장</button>
+    </div>
+
+    <!-- 알림 설정 -->
+    <div class="bg-white rounded shadow p-4 space-y-3">
+      <h2 class="text-sm font-semibold">알림 설정</h2>
+      <label class="flex items-center gap-2 text-sm">
+        <input type="checkbox" id="alertComment" class="accent-pink-400" /> 댓글 알림 받기
+      </label>
+      <label class="flex items-center gap-2 text-sm">
+        <input type="checkbox" id="alertLike" class="accent-pink-400" /> 좋아요 알림 받기
+      </label>
+      <label class="flex items-center gap-2 text-sm">
+        <input type="checkbox" id="alertFollow" class="accent-pink-400" /> 팔로우 알림 받기
+      </label>
+      <button id="saveAlerts" class="w-full py-2 mt-2 bg-gray-100 rounded">알림 설정 저장</button>
+    </div>
+
+    <!-- 기타 -->
+    <div class="space-y-3">
+      <button id="toggleDark" class="w-full py-2 bg-yellow-100 rounded">다크모드 토글</button>
+      <button id="logoutBtn" class="w-full py-2 bg-pink-300 text-white rounded">로그아웃</button>
+      <button id="deleteAccount" class="w-full py-2 bg-red-200 text-red-800 rounded">계정 탈퇴</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut,
+      deleteUser
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      updateDoc,
+      deleteDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "creeva-7e0dc.firebaseapp.com",
+      projectId: "creeva-7e0dc",
+      storageBucket: "creeva-7e0dc.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+
+    onAuthStateChanged(auth, async user => {
+      if (user) {
+        currentUser = user;
+        document.getElementById("userEmail").textContent = user.email;
+        document.getElementById("userUid").textContent = user.uid;
+
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          document.getElementById("nickname").value = data.name || "";
+          document.getElementById("alertComment").checked = data.alertComment ?? true;
+          document.getElementById("alertLike").checked = data.alertLike ?? true;
+          document.getElementById("alertFollow").checked = data.alertFollow ?? true;
+        }
+      } else {
+        alert("로그인이 필요합니다.");
+        window.location.href = "login.html";
+      }
+    });
+
+    document.getElementById("saveNickname").addEventListener("click", async () => {
+      const name = document.getElementById("nickname").value.trim();
+      if (!name) return alert("닉네임을 입력하세요.");
+      await updateDoc(doc(db, "users", currentUser.uid), { name });
+      alert("닉네임이 저장되었습니다.");
+    });
+
+    document.getElementById("saveAlerts").addEventListener("click", async () => {
+      await updateDoc(doc(db, "users", currentUser.uid), {
+        alertComment: document.getElementById("alertComment").checked,
+        alertLike: document.getElementById("alertLike").checked,
+        alertFollow: document.getElementById("alertFollow").checked
+      });
+      alert("알림 설정이 저장되었습니다.");
+    });
+
+    document.getElementById("toggleDark").addEventListener("click", () => {
+      const body = document.getElementById("body");
+      body.classList.toggle("bg-[#faf6f0]");
+      body.classList.toggle("bg-gray-900");
+      body.classList.toggle("text-[#3c2f2f]");
+      body.classList.toggle("text-white");
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+      alert("로그아웃 되었습니다.");
+      window.location.href = "login.html";
+    });
+
+    document.getElementById("deleteAccount").addEventListener("click", async () => {
+      if (!confirm("정말로 탈퇴하시겠습니까?")) return;
+      try {
+        await deleteDoc(doc(db, "users", currentUser.uid));
+        await deleteUser(currentUser);
+        alert("탈퇴 완료되었습니다.");
+        window.location.href = "login.html";
+      } catch (e) {
+        alert("탈퇴 실패: " + e.message);
+      }
+    });
+  </script>
+</body>
+</html>

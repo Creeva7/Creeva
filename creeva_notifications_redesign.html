@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>알림</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #faf6f0; color: #3c2f2f; }
+  </style>
+</head>
+<body>
+  <div class="max-w-xl mx-auto p-4 space-y-4">
+    <h2 class="text-xl font-bold mb-2">알림</h2>
+
+    <!-- 알림 항목 -->
+    <div class="bg-white p-4 rounded shadow text-sm">
+      <div class="flex justify-between">
+        <span class="font-semibold text-pink-500">[댓글]</span>
+        <span class="text-xs text-gray-400">3분 전</span>
+      </div>
+      <p class="mt-1 text-gray-700">하루님이 당신의 작품에 댓글을 남겼습니다: <em>“그림 너무 좋아요!”</em></p>
+    </div>
+
+    <div class="bg-white p-4 rounded shadow text-sm">
+      <div class="flex justify-between">
+        <span class="font-semibold text-blue-500">[좋아요]</span>
+        <span class="text-xs text-gray-400">1시간 전</span>
+      </div>
+      <p class="mt-1 text-gray-700">숨길님이 당신의 작품을 좋아합니다.</p>
+    </div>
+
+    <div class="bg-white p-4 rounded shadow text-sm opacity-70">
+      <div class="flex justify-between">
+        <span class="font-semibold text-gray-500">[팔로우]</span>
+        <span class="text-xs text-gray-400">어제</span>
+      </div>
+      <p class="mt-1 text-gray-700">빛나님이 당신을 팔로우하기 시작했습니다.</p>
+    </div>
+  </div>
+</body>
+</html>

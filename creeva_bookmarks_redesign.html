@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>북마크한 작품</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #faf6f0; color: #3c2f2f; }
+  </style>
+</head>
+<body>
+  <div class="max-w-xl mx-auto p-4 space-y-4">
+    <h2 class="text-xl font-bold mb-4">내 북마크</h2>
+
+    <!-- 북마크 카드 리스트 -->
+    <div class="grid grid-cols-1 gap-4">
+      <div class="relative rounded-lg overflow-hidden shadow bg-white flex">
+        <img src="https://placekitten.com/410/300" class="w-28 h-28 object-cover" />
+        <div class="flex-1 p-3 space-y-1">
+          <h3 class="text-base font-semibold truncate">별밤 이야기</h3>
+          <p class="text-sm text-gray-600">by 하루</p>
+          <div class="text-xs text-gray-400">♥ 22 · 댓글 4</div>
+        </div>
+        <button class="absolute top-2 right-2 text-gray-400 hover:text-red-400 text-sm">✕</button>
+      </div>
+
+      <div class="relative rounded-lg overflow-hidden shadow bg-white flex">
+        <img src="https://placekitten.com/411/300" class="w-28 h-28 object-cover" />
+        <div class="flex-1 p-3 space-y-1">
+          <h3 class="text-base font-semibold truncate">감성 고양이</h3>
+          <p class="text-sm text-gray-600">by 숨길</p>
+          <div class="text-xs text-gray-400">♥ 35 · 댓글 6</div>
+        </div>
+        <button class="absolute top-2 right-2 text-gray-400 hover:text-red-400 text-sm">✕</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
